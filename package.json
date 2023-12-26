@@ -20,7 +20,7 @@
     "mongoose": "^7.6.3",
     "mongoose-paginate-v2": "^1.7.4",
     "multer": "^1.4.5-lts.1",
-    "nodemon": "^3.0.1",
+    "nodemon": "^3.0.2",
     "streamifier": "^0.1.1"
   }
 }
