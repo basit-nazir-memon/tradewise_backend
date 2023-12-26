@@ -13,7 +13,7 @@ require('dotenv').config()
 
 const app = express()
 
-mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@cluster0.t1ompdc.mongodb.net/WebProject`, { useNewUrlParser: true })
+mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@cluster0.t1ompdc.mongodb.net/tradewise`, { useNewUrlParser: true })
 
 const db = mongoose.connection;
 
