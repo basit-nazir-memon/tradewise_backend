@@ -12,7 +12,9 @@ const ebookSchema = new Schema({
             content: {type: String, required: true}
         }
     ],
-    views: {type: Number, default: 0},
+    views: {
+        type: Number, default: 0
+    },
 })
 
 const Ebook = mongoose.model('Video', ebookSchema);
