@@ -5,7 +5,8 @@ const upload = multer();
 const cloudinary = require("cloudinary").v2;
 const streamifier = require("streamifier");
 const Video = require('../models/Video');
-const User = require('../models/User')
+const User = require('../models/User');
+const Book = require('../models/Ebook');
 require('dotenv').config();
 
 cloudinary.config({
@@ -18,11 +19,11 @@ cloudinary.config({
 let streamUpload = (req) => {
     return new Promise((resolve, reject) => {
         let stream = cloudinary.uploader.upload_stream((error, result) => {
-        if (result) {
-            resolve(result);
-        } else {
-            reject(error);
-        }
+            if (result) {
+                resolve(result);
+            } else {
+                reject(error);
+            }
         });
         streamifier.createReadStream(req.file.buffer).pipe(stream);
     });
@@ -34,7 +35,7 @@ async function uploadFile(req) {
 }
 
 router.get('/videos', async (req, res) => {
-    const { page = 1, limit = 10, sortBy, sortOrder, filterByViews, filterByAuthor, type} = req.query;
+    const { page = 1, limit = 10, sortBy, sortOrder, filterByViews, filterByAuthor, type } = req.query;
     const options = {
         page: parseInt(page),
         limit: parseInt(limit),
@@ -42,7 +43,7 @@ router.get('/videos', async (req, res) => {
     };
 
     try {
-        let query = {}; 
+        let query = {};
         query.disabled = false;
         if (filterByViews) {
             query.views = filterByViews;
@@ -51,13 +52,13 @@ router.get('/videos', async (req, res) => {
         if (filterByAuthor) {
             query.author = filterByAuthor;
         }
-        if(type){
+        if (type) {
             query.author = type;
         }
         const videos = await Video.paginate(query, options);
 
         console.log(videos);
-        
+
         const authorIds = videos.docs.map(video => video.author);
 
         const authors = await User.find({ _id: { $in: authorIds } }, 'username');
@@ -96,4 +97,126 @@ router.get('/videos', async (req, res) => {
 //     }
 // });
 
+router.get('/MustWatchLive', async (req, res) => {
+    try {
+        const videos = await Video.find({ type: 'Live' }).populate('author', 'fullName profileImage');
+
+        const fetchedData = videos.map(video => ({
+            name: video.author.fullName,
+            title: video.title,
+            source: video.coverImage,
+            views: video.views,
+            type: video.type,
+            imageSrc: video.author.profileImage
+        }));
+
+        res.json(fetchedData);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+router.get('/TopStreamers', async (req, res) => {
+
+    try {
+
+        const users = await User.find({}, '_id fullName userInfo');
+
+        const userCounts = await Promise.all(
+            users.map(async user => {
+                const followerCount = await Follow.countDocuments({ following: user._id });
+                return {
+                    _id: user._id,
+                    fullName: user.fullName,
+                    userInfo: user.userInfo,
+                    followersCount: followerCount
+                };
+            })
+        );
+
+        res.json(userCounts);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+
+
+});
+router.get('/TrendingVideo', async (req, res) => {
+    try {
+        const videos = await Video.find({ type: 'Published' }).populate('author', 'fullName profileImage');
+
+        const fetchedData = videos.map(video => ({
+            name: video.author.fullName,
+            title: video.title,
+            source: video.coverImage,
+            views: video.views,
+            type: video.type,
+            imageSrc: video.author.profileImage
+        }));
+
+        res.json(fetchedData);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+router.get('HotVideos', async (req, res) => {
+    try {
+        const videos = await Video.find({ type: 'Upcoming' }).populate('author', 'fullName profileImage');
+
+        const fetchedData = videos.map(video => ({
+            name: video.author.fullName,
+            title: video.title,
+            source: video.coverImage,
+            views: video.views,
+            type: video.type,
+            imageSrc: video.author.profileImage
+        }));
+
+        res.json(fetchedData);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+router.get('/popularbooks', async (req, res) => {
+    try {
+        const book = Book.find({ type: "Published" }).populate('author', 'fullName profileImage');
+        const fetchedData = book.map(book => ({
+            name: book.author.fullName,
+            title: book.title,
+            source: book.coverImage,
+            views: book.views,
+            type: book.type,
+            imageSrc: book.author.profileImage
+        }));
+
+        res.json(fetchedData);
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+router.get('/TopLecturer',async(req,res)=>{
+    try {
+
+        const users = await User.find({}, '_id fullName userInfo ProfileImage');
+
+        const userCounts = await Promise.all(
+            users.map(async user => {
+                const followerCount = await Follow.countDocuments({ following: user._id });
+                return {
+                    _id: user._id,
+                    fullName: user.fullName,
+                    userInfo: user.userInfo,
+                    ProfileImage:user.ProfileImage,
+                    followersCount: followerCount
+                };
+            })
+        );
+
+        res.json(userCounts);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+
+})
 module.exports = router;
