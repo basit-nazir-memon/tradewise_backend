@@ -1,4 +1,5 @@
 const mongoose = require ('mongoose')
+const mongoosePaginate = require("mongoose-paginate-v2");
 const Schema = mongoose.Schema;
 
 const videoSchema = new Schema({
@@ -8,13 +9,11 @@ const videoSchema = new Schema({
     coverImage: {type: String, required: true},
     type: {type: String, enum: ['Live', 'Upcoming', 'Published'], default: 'Published'},
     views: {type: Number, default: 0},
-    contents: [
-        {
-            title: {type: String, required: true},
-            content: {type: String, required: true}
-        }
-    ]
+    videoFile: {type: String, required: true},
+    disabled: {type: Boolean, default: false}
 })
+
+videoSchema.plugin(mongoosePaginate);
 
 const Video = mongoose.model('Video', videoSchema);
 
