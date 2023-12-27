@@ -254,7 +254,7 @@ router.get('HotVideos', async (req, res) => {
 });
 router.get('/popularbooks', async (req, res) => {
     try {
-        const book = Book.find({ type: "Published" }).populate('author', 'fullName profileImage');
+        const book = Ebook.find({ type: "Published" }).populate('author', 'fullName profileImage');
         const fetchedData = book.map(book => ({
             name: book.author.fullName,
             title: book.title,
@@ -293,5 +293,156 @@ router.get('/TopLecturer',async(req,res)=>{
         res.status(500).json({ message: error.message });
     }
 
-})
+});
+
+router.get('/Books/Novels', async (req, res) => {
+    try {
+        const book = Ebook.find({ category: "Novel" }).populate('author', 'fullName profileImage');
+        const fetchedData = book.map(book => ({
+            name: book.author.fullName,
+            title: book.title,
+            source: book.coverImage,
+            views: book.views,
+            type: book.type,
+            imageSrc: book.author.profileImage
+        }));
+
+        res.json(fetchedData);
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+router.get('/Books/Education', async (req, res) => {
+    try {
+        const book = Ebook.find({ category: "Education" }).populate('author', 'fullName profileImage');
+        const fetchedData = book.map(book => ({
+            name: book.author.fullName,
+            title: book.title,
+            source: book.coverImage,
+            views: book.views,
+            type: book.type,
+            imageSrc: book.author.profileImage
+        }));
+
+        res.json(fetchedData);
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+router.get('/Books/ScienceFiction', async (req, res) => {
+    try {
+        const book = Ebook.find({ category: "Scienecfiction" }).populate('author', 'fullName profileImage');
+        const fetchedData = book.map(book => ({
+            name: book.author.fullName,
+            title: book.title,
+            source: book.coverImage,
+            views: book.views,
+            type: book.type,
+            imageSrc: book.author.profileImage
+        }));
+
+        res.json(fetchedData);
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+router.get('/AllLecturer',async(req,res)=>{
+    try {
+
+        const totaluserscount=(await User.find()).length();
+
+        const users = await User.find({}, '_id fullName userInfo ProfileImage rating works hashtag');
+
+        const userCounts = await Promise.all(
+            users.map(async user => {
+                const followerCount = await Follow.countDocuments({ following: user._id });
+                return {
+                    _id: user._id,
+                    fullName: user.fullName,
+                    userInfo: user.userInfo,
+                    ProfileImage:user.ProfileImage,
+                    rating:user.rating,
+                    works:user.works,
+                    tags:user.hashtag,
+                    avgrating:rating / totaluserscount,
+                    followersCount: followerCount
+                };
+            })
+        );
+
+        res.json(userCounts);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+
+});
+
+
+router.get('/VerifiedLecturer',async(req,res)=>{
+    try {
+
+        const totaluserscount=(await User.find()).length();
+
+        const users = await User.find({category:"Verified"}, '_id fullName userInfo ProfileImage rating works hashtag');
+
+        const userCounts = await Promise.all(
+            users.map(async user => {
+                const followerCount = await Follow.countDocuments({ following: user._id });
+                return {
+                    _id: user._id,
+                    fullName: user.fullName,
+                    userInfo: user.userInfo,
+                    ProfileImage:user.ProfileImage,
+                    rating:user.rating,
+                    works:user.works,
+                    tags:user.hashtag,
+                    avgrating:rating / totaluserscount,
+                    followersCount: followerCount
+                };
+            })
+        );
+
+        res.json(userCounts);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+
+});
+
+
+router.get('/NotVerifiedLecturer',async(req,res)=>{
+    try {
+
+        const totaluserscount=(await User.find()).length();
+
+        const users = await User.find({category:"NotVerified"}, '_id fullName userInfo ProfileImage rating works hashtag');
+
+        const userCounts = await Promise.all(
+            users.map(async user => {
+                const followerCount = await Follow.countDocuments({ following: user._id });
+                return {
+                    _id: user._id,
+                    fullName: user.fullName,
+                    userInfo: user.userInfo,
+                    ProfileImage:user.ProfileImage,
+                    rating:user.rating,
+                    works:user.works,
+                    tags:user.hashtag,
+                    avgrating:rating / totaluserscount,
+                    followersCount: followerCount
+                };
+            })
+        );
+
+        res.json(userCounts);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+
+});
+
 module.exports = router;
