@@ -5,7 +5,8 @@ const ebookSchema = new Schema({
     title: {type: String, required: true},
     author: {type: Schema.Types.ObjectId, ref: 'User'},
     coverImage: {type: String, required: true},
-    type: {type: String, enum: ['Live', 'Upcoming', 'Published'], default: 'Published'},
+    type: {type: String, enum: ['Free', 'Paid'], default: 'Published'},
+    price: {type: Number, default: 0},
     contents: [
         {
             title: {type: String, required: true},
@@ -17,6 +18,6 @@ const ebookSchema = new Schema({
     },
 })
 
-const Ebook = mongoose.model('Video', ebookSchema);
+const Ebook = mongoose.model('Ebook', ebookSchema);
 
 module.exports = Ebook;

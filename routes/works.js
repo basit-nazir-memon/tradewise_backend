@@ -6,7 +6,8 @@ const cloudinary = require("cloudinary").v2;
 const streamifier = require("streamifier");
 const Video = require('../models/Video');
 const User = require('../models/User');
-const Book = require('../models/Ebook');
+const Ebook = require('../models/Ebook')
+const auth = require('../middleware/auth')
 require('dotenv').config();
 
 cloudinary.config({
@@ -96,6 +97,80 @@ router.get('/videos', async (req, res) => {
 //         res.status(500).send('Server Error');
 //     }
 // });
+
+router.get('/videos/mine', auth, async (req, res) => {
+    const { type } = req.query;
+
+    try {
+
+        console.log(type);
+
+        const videos = await Video.find({ author: req.user.id })
+            .populate('author', 'username fullName profilePic'); // Populate the author field
+
+        let filteredVideos = [];
+
+        if (type == "live"){
+            filteredVideos = videos.filter(video => video.type === "Live");
+        }else{
+            filteredVideos = videos.filter(video => video.type != "Live");
+        }
+
+        const videosWithAuthorNames = filteredVideos.map(video => {
+            return {
+                ...video.toObject(),
+                author: video.author ? video.author.username : null,
+                authorId: video.author ? video.author._id : null,
+                authorName: video.author ? video.author.fullName : null,
+                authorProfilePic: video.author ? video.author.profilePic : null,
+            };
+        });
+        res.json(videosWithAuthorNames);
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+
+router.get('/ebooks/mine', auth, async (req, res) => {
+    const { type } = req.query;
+
+    try {
+        console.log(type);
+        const ebooks = await Ebook.find({ author: req.user.id })
+            .populate('author', 'username fullName profilePic'); // Populate the author field
+
+        let filteredEbooks = [];
+
+        if (type){
+            if (type == "free"){
+                filteredEbooks = ebooks.filter(ebook => ebook.type === "Free");
+            }else{
+                filteredEbooks = ebooks.filter(ebook => ebook.type != "Free");
+            }
+        }else{
+            filteredEbooks = ebooks;
+        }
+        
+
+        const ebooksWithAuthorNames = filteredEbooks.map(ebook => {
+            return {
+                ...ebook.toObject(),
+                author: ebook.author ? ebook.author.username : null,
+                authorId: ebook.author ? ebook.author._id : null,
+                authorName: ebook.author ? ebook.author.fullName : null,
+                authorProfilePic: ebook.author ? ebook.author.profilePic : null,
+            };
+        });
+        res.json(ebooksWithAuthorNames);
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
 
 router.get('/MustWatchLive', async (req, res) => {
     try {
