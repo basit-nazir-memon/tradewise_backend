@@ -15,43 +15,21 @@ router.post("/user/:id", async (req, res) => {
 });
 
 // Update user information
-router.patch("/users/:id", async (req, res) => {
-  const updates = Object.keys(req.body);
-  const allowedUpdates = [
-    "fullName",
-    "username",
-    "email",
-    "password",
-    "role",
-    "blocked",
-    "gender",
-    "hashtag",
-    "dob",
-    "location",
-    "bio",
-  ];
-
-  const isValidOperation = updates.every((update) =>
-    allowedUpdates.includes(update)
-  );
-
-  if (!isValidOperation) {
-    return res.status(400).send({ error: "Invalid updates!" });
-  }
+router.patch("/user/:id", async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
 
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const user = await User.findByIdAndUpdate(id, updates, { new: true });
 
     if (!user) {
-      return res.status(404).send();
+      return res.status(404).json({ error: "User not found" });
     }
 
-    res.send(user);
+    res.status(200).json(user);
   } catch (error) {
-    res.status(400).send(error);
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -71,22 +49,22 @@ router.delete("/users/:id", auth, admin, async (req, res) => {
 });
 
 // Get user by ID
-router.get("/users/:id",  async (req, res) => {
+router.get("/user/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
 
     if (!user) {
       return res.status(404).send();
     }
-
-    res.send(user);
+    console.log("in find user route");
+    res.json(user);
   } catch (error) {
     res.status(500).send(error);
   }
 });
 
 // Get all users as JSON
-router.get("/users", auth, admin, async (req, res) => {
+router.get("/users", async (req, res) => {
   try {
     const users = await User.find();
     res.send(users);

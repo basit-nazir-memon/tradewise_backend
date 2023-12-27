@@ -5,7 +5,10 @@ const adminRoute = require('./routes/admin');
 const authRoute = require('./routes/auth');
 const blogPostRoute = require('./routes/blogPost');
 const searchRoute = require('./routes/search');
+const profileRoute = require('./routes/userProfile');
+const accountRoute = require('./routes/account');
 const UserInteractionRoute = require('./routes/userInteraction');
+const orderRoute = require('./routes/order');
 
 
 const cors = require('cors');
@@ -13,7 +16,7 @@ require('dotenv').config()
 
 const app = express()
 
-mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@cluster0.t1ompdc.mongodb.net/WebProject`, { useNewUrlParser: true })
+mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@cluster0.t1ompdc.mongodb.net/tradewise`, { useNewUrlParser: true })
 
 const db = mongoose.connection;
 
@@ -29,6 +32,9 @@ app.use('/', UserInteractionRoute);
 app.use('/admin', adminRoute);
 app.use('/posts', blogPostRoute);
 app.use('/search', searchRoute);
+app.use("/profile", profileRoute);
+app.use("/account", accountRoute);
+app.use("/orders", orderRoute);
 
 app.get('/', (req, res) => res.send('Hello World!'))
 

@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const orderSchema = new Schema({
-  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  accountId: { type: Schema.Types.ObjectId, ref:"Account", required: true },
+  userId: { type: String, required: true },
+  accountId: { type: String, required: true },
   placedDate: { type: Date, default: Date.now },
   orderNumber: { type: String, unique: true, required: true },
   numberOfCoins: { type: Number, required: true },
