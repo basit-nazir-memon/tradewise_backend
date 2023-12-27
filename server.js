@@ -7,6 +7,7 @@ const blogPostRoute = require('./routes/blogPost');
 const searchRoute = require('./routes/search');
 const UserInteractionRoute = require('./routes/userInteraction');
 const worksRoute = require('./routes/works')
+const userProfile = require('./routes/userProfile')
 
 
 const cors = require('cors');
@@ -27,6 +28,7 @@ app.use(cors());
 
 app.use('/', authRoute);
 app.use('/', UserInteractionRoute);
+app.use('/', userProfile);
 app.use('/admin', adminRoute);
 app.use('/posts', blogPostRoute);
 app.use('/search', searchRoute);
