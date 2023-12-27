@@ -9,8 +9,10 @@ const videoSchema = new Schema({
     coverImage: {type: String, required: true},
     type: {type: String, enum: ['Live', 'Upcoming', 'Published'], default: 'Published'},
     views: {type: Number, default: 0},
-    videoFile: {type: String, required: true},
-    disabled: {type: Boolean, default: false}
+    videoFile: {type: String},
+    disabled: {type: Boolean, default: false},
+    streamKey: {type: String},
+    serverUrl: {type: String}
 })
 
 videoSchema.plugin(mongoosePaginate);

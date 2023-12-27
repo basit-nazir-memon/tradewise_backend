@@ -6,7 +6,9 @@ const ebookSchema = new Schema({
     author: {type: Schema.Types.ObjectId, ref: 'User'},
     coverImage: {type: String, required: true},
     type: {type: String, enum: ['Free', 'Paid'], default: 'Published'},
+    introduction: {type: String, required: true},
     price: {type: Number, default: 0},
+    category: {type: String, required: true},
     contents: [
         {
             title: {type: String, required: true},
