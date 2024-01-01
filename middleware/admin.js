@@ -1,4 +1,6 @@
 const admin = (req, res, next) => {
+    console.log(req.user.role);
+    console.log(req.user.fullName);
     if (req.user && req.user.role === 'admin') {
         next();
     } else {
@@ -7,3 +9,5 @@ const admin = (req, res, next) => {
 }
 
 module.exports = admin;
+
+

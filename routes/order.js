@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const admin = require("../middleware/admin");
 const auth = require("../middleware/auth");
 const Order = require("../models/Order"); // Adjust the path as needed
 
@@ -46,6 +47,7 @@ router.get("/pending/:id",auth,  async (req, res) => {
 });
 
 
+
 //Get closed orders
 router.get("/closed/:id", auth, async (req, res) => {
   try {
@@ -59,5 +61,20 @@ router.get("/closed/:id", auth, async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
+
+// Route to fetch all orders sorted by placedDate
+router.get("/",auth,admin, async (req, res) => {
+  try {
+    // Fetch all orders and sort by placedDate in descending order (newest first)
+    const orders = await Order.find().sort({ placedDate: -1 });
+
+    res.json(orders);
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 module.exports = router;

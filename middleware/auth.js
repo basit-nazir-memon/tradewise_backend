@@ -1,23 +1,25 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 const auth = (req, res, next) => {
-    let token = req.header('Authorization');
+  let token = req.header("Authorization");
 
-    if (!token) {
-        return res.status(401).json({ msg: 'Authorization denied. Token not found.' });
-    }
+  if (!token) {
+    return res
+      .status(401)
+      .json({ msg: "Authorization denied. Token not found." });
+  }
 
-    token = token.split(' ')[1];
+  token = token.split(" ")[1];
 
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        req.user = decoded.user;
-        
-        next();
-    } catch (err) {
-        res.status(401).json({ msg: 'Token is not valid.' });
-    }
-}
+    req.user = decoded.user;
+    console.log("decode user" + req.user.username);
+    next();
+  } catch (err) {
+    res.status(401).json({ msg: "Token is not valid." });
+  }
+};
 
 module.exports = auth;
