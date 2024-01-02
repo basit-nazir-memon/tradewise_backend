@@ -64,7 +64,7 @@ router.get("/user/:id", async (req, res) => {
 });
 
 // Get all users as JSON
-router.get("/users", async (req, res) => {
+router.get("/users",auth, admin, async (req, res) => {
   try {
     const users = await User.find();
     res.send(users);

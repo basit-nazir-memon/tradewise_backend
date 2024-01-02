@@ -7,7 +7,6 @@ const jwt = require('jsonwebtoken');
 
 router.post('/register', async (req, res) => {
     const { fullName, username, email, password, confirm_password } = req.body;
-    
 
 
     if (password != confirm_password){
@@ -57,13 +56,13 @@ router.post('/register', async (req, res) => {
         const payload = {
             user: {
                 id: user.id,
-                role: 'user'
+                role: user.role
             },
         };
 
         jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" }, (err, token) => {
             if (err) throw err;
-            res.json({ token: token, id: user.id, role: 'user' });
+            res.json({ token: token, id: user.id, role: user.role });
         });
 
     } catch (err) {

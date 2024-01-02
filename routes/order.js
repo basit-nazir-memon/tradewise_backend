@@ -76,5 +76,35 @@ router.get("/",auth,admin, async (req, res) => {
   }
 });
 
+router.put("/update-status/:orderId", auth,admin, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { newStatus } = req.body; // Assuming you send the new status in the request body
+
+    // Validate that the newStatus is one of the allowed values (cancel, complete, pending)
+    const allowedStatusValues = ["canceled", "completed", "pending"];
+    if (!allowedStatusValues.includes(newStatus)) {
+      return res.status(400).json({ error: "Invalid status value" });
+    }
+
+    // Update the order status
+    const updatedOrder = await Order.findByIdAndUpdate(
+      orderId,
+      { status: newStatus },
+      { new: true }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    res.status(200).json(updatedOrder);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+
 
 module.exports = router;
