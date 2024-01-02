@@ -8,6 +8,8 @@ const searchRoute = require('./routes/search');
 const UserInteractionRoute = require('./routes/userInteraction');
 const worksRoute = require('./routes/works')
 const userProfile = require('./routes/userProfile')
+const orderRoute = require('./routes/order')
+
 
 
 const cors = require('cors');
@@ -33,6 +35,8 @@ app.use('/admin', adminRoute);
 app.use('/posts', blogPostRoute);
 app.use('/search', searchRoute);
 app.use('/works', worksRoute);
+app.use('/orders', orderRoute);
+app.use('/profile', userProfile);
 
 
 app.get('/', (req, res) => res.send('Hello World!'))
