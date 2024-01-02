@@ -12,6 +12,7 @@ const streamifier = require("streamifier");
 const Video = require('../models/Video');
 const User = require('../models/User');
 const Ebook = require('../models/Ebook')
+const Follow=require('../models/Follow')
 const auth = require('../middleware/auth')
 require('dotenv').config();
 
@@ -369,10 +370,11 @@ router.delete('/ebooks/:id', auth, async (req, res) => {
         console.error(err.message);
         res.status(500).send('Server Error');
     }
-})
+});
+
 router.get('/MustWatchLive', async (req, res) => {
     try {
-        const videos = await Video.find({ type: 'Live' }).populate('author', 'fullName profileImage');
+        const videos = await Video.find({ type: 'Live' }).populate('author', 'fullName profilePic');
 
         const fetchedData = videos.map(video => ({
             name: video.author.fullName,
@@ -380,10 +382,10 @@ router.get('/MustWatchLive', async (req, res) => {
             source: video.coverImage,
             views: video.views,
             type: video.type,
-            imageSrc: video.author.profileImage
+            imageSrc: video.author.profilePic
         }));
 
-        res.json(fetchedData);
+        res.status(200).json(fetchedData);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -406,8 +408,8 @@ router.get('/TopStreamers', async (req, res) => {
                 };
             })
         );
-
-        res.json(userCounts);
+            console.log(userCounts)
+        res.status(200).json(userCounts);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -427,7 +429,7 @@ router.get('/TrendingVideo', async (req, res) => {
             imageSrc: video.author.profileImage
         }));
 
-        res.json(fetchedData);
+        res.status(200).json(fetchedData);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -445,33 +447,35 @@ router.get('HotVideos', async (req, res) => {
             imageSrc: video.author.profileImage
         }));
 
-        res.json(fetchedData);
+        res.status(200).json(fetchedData);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
+
 router.get('/popularbooks', async (req, res) => {
     try {
-        const book = Ebook.find({ type: "Published" }).populate('author', 'fullName profileImage');
-        const fetchedData = book.map(book => ({
+        const books = await Ebook.find({ category: "Published" }).populate('author', 'fullName profilePic');
+        
+        const fetchedData = books.map(book => ({
             name: book.author.fullName,
             title: book.title,
             source: book.coverImage,
             views: book.views,
             type: book.type,
-            imageSrc: book.author.profileImage
+            imageSrc: book.author.profilePic
         }));
 
-        res.json(fetchedData);
-
+        res.status(200).json(fetchedData);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
+
 router.get('/TopLecturer',async(req,res)=>{
     try {
 
-        const users = await User.find({}, '_id fullName userInfo ProfileImage');
+        const users = await User.find({}, '_id fullName userInfo profilePic');
 
         const userCounts = await Promise.all(
             users.map(async user => {
@@ -480,50 +484,54 @@ router.get('/TopLecturer',async(req,res)=>{
                     _id: user._id,
                     fullName: user.fullName,
                     userInfo: user.userInfo,
-                    ProfileImage:user.ProfileImage,
+                    ProfileImage:user.profilePic,
                     followersCount: followerCount
                 };
             })
         );
 
-        res.json(userCounts);
+        res.status(200).json(userCounts);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 
 });
-
 router.get('/Books/Novels', async (req, res) => {
     try {
-        const book = Ebook.find({ category: "Novel" }).populate('author', 'fullName profileImage');
-        const fetchedData = book.map(book => ({
+        const books = await Ebook.find({ category: "Novel" }).populate('author', 'fullName profilePic');
+
+        const fetchedData = books.map(book => ({
             name: book.author.fullName,
             title: book.title,
             source: book.coverImage,
             views: book.views,
             type: book.type,
-            imageSrc: book.author.profileImage
+            imageSrc: book.author.profilePic
         }));
 
-        res.json(fetchedData);
+        console.log(fetchedData);
+        res.status(200).json(fetchedData);
 
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
+
 router.get('/Books/Education', async (req, res) => {
     try {
-        const book = Ebook.find({ category: "Education" }).populate('author', 'fullName profileImage');
-        const fetchedData = book.map(book => ({
+        const books = await Ebook.find({ category: "Education" }).populate('author', 'fullName profilePic');
+
+        const fetchedData = books.map(book => ({
             name: book.author.fullName,
             title: book.title,
             source: book.coverImage,
             views: book.views,
             type: book.type,
-            imageSrc: book.author.profileImage
+            imageSrc: book.author.profilePic
         }));
 
-        res.json(fetchedData);
+        console.log(fetchedData);
+        res.status(200).json(fetchedData);
 
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -531,29 +539,30 @@ router.get('/Books/Education', async (req, res) => {
 });
 router.get('/Books/ScienceFiction', async (req, res) => {
     try {
-        const book = Ebook.find({ category: "Scienecfiction" }).populate('author', 'fullName profileImage');
-        const fetchedData = book.map(book => ({
+        const books = await Ebook.find({ category: "Science Fiction" }).populate('author', 'fullName profilePic');
+
+        const fetchedData = books.map(book => ({
             name: book.author.fullName,
             title: book.title,
             source: book.coverImage,
             views: book.views,
             type: book.type,
-            imageSrc: book.author.profileImage
+            imageSrc: book.author.profilePic
         }));
 
-        res.json(fetchedData);
+        console.log(fetchedData);
+        res.status(200).json(fetchedData);
 
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
 
-router.get('/AllLecturer',async(req,res)=>{
+router.get('/AllLecturer', async (req, res) => {
     try {
+        const totalUsersCount = await User.countDocuments(); 
 
-        const totaluserscount=(await User.find()).length();
-
-        const users = await User.find({}, '_id fullName userInfo ProfileImage rating works hashtag');
+        const users = await User.find({}, '_id fullName userInfo profilePic rating works hashtag');
 
         const userCounts = await Promise.all(
             users.map(async user => {
@@ -562,30 +571,30 @@ router.get('/AllLecturer',async(req,res)=>{
                     _id: user._id,
                     fullName: user.fullName,
                     userInfo: user.userInfo,
-                    ProfileImage:user.ProfileImage,
-                    rating:user.rating,
-                    works:user.works,
-                    tags:user.hashtag,
-                    avgrating:rating / totaluserscount,
+                    profilePic: user.profilePic, // Corrected the property name to profilePic
+                    rating: user.rating,
+                    works: user.works,
+                    tags: user.hashtag,
+                    avgrating: user.rating / totalUsersCount, // Use totalUsersCount obtained earlier
                     followersCount: followerCount
                 };
             })
         );
 
-        res.json(userCounts);
+     
+        res.status(200).json(userCounts);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-
 });
+
 
 
 router.get('/VerifiedLecturer',async(req,res)=>{
     try {
+        const totalUsersCount = await User.countDocuments(); 
 
-        const totaluserscount=(await User.find()).length();
-
-        const users = await User.find({category:"Verified"}, '_id fullName userInfo ProfileImage rating works hashtag');
+        const users = await User.find({category:"Verified"}, '_id fullName userInfo profilePic rating works hashtag');
 
         const userCounts = await Promise.all(
             users.map(async user => {
@@ -594,17 +603,18 @@ router.get('/VerifiedLecturer',async(req,res)=>{
                     _id: user._id,
                     fullName: user.fullName,
                     userInfo: user.userInfo,
-                    ProfileImage:user.ProfileImage,
-                    rating:user.rating,
-                    works:user.works,
-                    tags:user.hashtag,
-                    avgrating:rating / totaluserscount,
+                    profilePic: user.profilePic, // Corrected the property name to profilePic
+                    rating: user.rating,
+                    works: user.works,
+                    tags: user.hashtag,
+                    avgrating: user.rating / totalUsersCount, // Use totalUsersCount obtained earlier
                     followersCount: followerCount
                 };
             })
         );
 
-        res.json(userCounts);
+        console.log(userCounts);
+        res.status(200).json(userCounts);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -614,10 +624,9 @@ router.get('/VerifiedLecturer',async(req,res)=>{
 
 router.get('/NotVerifiedLecturer',async(req,res)=>{
     try {
+        const totalUsersCount = await User.countDocuments(); 
 
-        const totaluserscount=(await User.find()).length();
-
-        const users = await User.find({category:"NotVerified"}, '_id fullName userInfo ProfileImage rating works hashtag');
+        const users = await User.find({category:"NotVerified"}, '_id fullName userInfo profilePic rating works hashtag');
 
         const userCounts = await Promise.all(
             users.map(async user => {
@@ -626,20 +635,22 @@ router.get('/NotVerifiedLecturer',async(req,res)=>{
                     _id: user._id,
                     fullName: user.fullName,
                     userInfo: user.userInfo,
-                    ProfileImage:user.ProfileImage,
-                    rating:user.rating,
-                    works:user.works,
-                    tags:user.hashtag,
-                    avgrating:rating / totaluserscount,
+                    profilePic: user.profilePic, // Corrected the property name to profilePic
+                    rating: user.rating,
+                    works: user.works,
+                    tags: user.hashtag,
+                    avgrating: user.rating / totalUsersCount, // Use totalUsersCount obtained earlier
                     followersCount: followerCount
                 };
             })
         );
 
-        res.json(userCounts);
+        console.log(userCounts);
+        res.status(200).json(userCounts);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
+
 
 });
 
