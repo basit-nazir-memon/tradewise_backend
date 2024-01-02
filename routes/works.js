@@ -54,7 +54,6 @@ router.get('/videos', async (req, res) => {
         if (filterByViews) {
             query.views = filterByViews;
         }
-        console.log("filterByAuthor: ", filterByAuthor);
         if (filterByAuthor) {
             query.author = filterByAuthor;
         }
@@ -382,6 +381,8 @@ router.get('/MustWatchLive', async (req, res) => {
             type: video.type,
             imageSrc: video.author.profileImage
         }));
+
+        console.log(fetchedData);
 
         res.json(fetchedData);
     } catch (error) {

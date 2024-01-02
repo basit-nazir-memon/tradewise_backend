@@ -4,6 +4,25 @@ const admin = require("../middleware/admin");
 const router = express.Router();
 const User = require("../models/User"); // Adjust the path as needed
 
+
+// Get my details
+router.get("/user/me", auth, async (req, res) => {
+  console.log(req.user.id);
+
+  try {
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({msg: "No User"});
+    }
+
+    res.json(user);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
 router.post("/user/:id", async (req, res) => {
   try {
     const user = new User(req.body);
@@ -63,20 +82,6 @@ router.get("/user/:id", async (req, res) => {
   }
 });
 
-// Get my details
-router.get("/user/me", auth, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-
-    if (!user) {
-      return res.status(404).json({msg: "No User"});
-    }
-
-    res.json(user);
-  } catch (error) {
-    res.status(500).json(error);
-  }
-});
 
 // Get all users as JSON
 router.get("/users",auth, admin, async (req, res) => {
