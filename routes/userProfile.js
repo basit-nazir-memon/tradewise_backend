@@ -63,6 +63,21 @@ router.get("/user/:id", async (req, res) => {
   }
 });
 
+// Get my details
+router.get("/user/me", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({msg: "No User"});
+    }
+
+    res.json(user);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
 // Get all users as JSON
 router.get("/users",auth, admin, async (req, res) => {
   try {

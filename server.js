@@ -9,6 +9,8 @@ const profileRoute = require('./routes/userProfile');
 const accountRoute = require('./routes/account');
 const UserInteractionRoute = require('./routes/userInteraction');
 const orderRoute = require('./routes/order');
+const worksRoute = require('./routes/works')
+const userProfile = require('./routes/userProfile')
 
 
 const cors = require('cors');
@@ -16,6 +18,7 @@ require('dotenv').config()
 
 const app = express()
 
+mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@cluster0.t1ompdc.mongodb.net/tradewise`, { useNewUrlParser: true })
 mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@cluster0.t1ompdc.mongodb.net/tradewise`, { useNewUrlParser: true })
 
 const db = mongoose.connection;
@@ -29,12 +32,15 @@ app.use(cors());
 
 app.use('/', authRoute);
 app.use('/', UserInteractionRoute);
+app.use('/', userProfile);
 app.use('/admin', adminRoute);
 app.use('/posts', blogPostRoute);
 app.use('/search', searchRoute);
 app.use("/profile", profileRoute);
 app.use("/account", accountRoute);
 app.use("/orders", orderRoute);
+app.use('/works', worksRoute);
+
 
 app.get('/', (req, res) => res.send('Hello World!'))
 

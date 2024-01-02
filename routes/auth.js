@@ -9,6 +9,7 @@ router.post('/register', async (req, res) => {
     const { fullName, username, email, password, confirm_password } = req.body;
 
 
+
     if (password != confirm_password){
         return res.status(402).json({msg: 'Passwords not match'})
     }
